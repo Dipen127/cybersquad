@@ -18,6 +18,7 @@ import { useIsMobile } from "../hooks/useIsMobile";
 function reducer(state, action) {
   switch (action.type) {
     case "tab":
+      if (state.tab === action.value) return state;
       return { ...state, tab: action.value };
     case "user":
       return {
@@ -60,7 +61,7 @@ export function CyberSquadChat({ activeTab, onTabChange }) {
   });
 
   useEffect(() => {
-    if (activeTab && activeTab !== state.tab) {
+    if (activeTab) {
       dispatch({ type: "tab", value: activeTab });
     }
   }, [activeTab]);

@@ -150,7 +150,7 @@ export async function ensureDevUser(uid, name, avatar) {
     if (name) u.setName(name);
     if (avatar) u.setAvatar(avatar);
     await CometChatUIKit.createUser(u);
-  } catch (err) {
+  } catch {
     // If user already exists in CometChat dashboard, update their name & avatar to match CyberSquad
     try {
       const u = new CometChat.User(uid);
