@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { sendIncidentAlert } from "../services/cometchat";
 
-export function CyberSquadNavbar({ currentUser, onSwitchUser, activeTab, onTabChange }) {
+export function CyberSquadNavbar({ currentUser, onSwitchUser, activeTab, onTabChange, onIncidentAlertSent }) {
   const [defcon, setDefcon] = useState(3);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -22,10 +22,14 @@ export function CyberSquadNavbar({ currentUser, onSwitchUser, activeTab, onTabCh
   const handleBroadcastAlert = async () => {
     try {
       setIsBroadcasting(true);
-      await sendIncidentAlert(scenarioCounter);
+      const sentMessage = await sendIncidentAlert(scenarioCounter);
       setScenarioCounter((prev) => prev + 1);
       setToastMessage("🚨 Threat incident broadcasted to War Room!");
-      onTabChange("groups");
+      if (onIncidentAlertSent) {
+        onIncidentAlertSent(sentMessage);
+      } else {
+        onTabChange("groups");
+      }
       setTimeout(() => setToastMessage(""), 4000);
     } catch (err) {
       console.error("Alert broadcast failed:", err);

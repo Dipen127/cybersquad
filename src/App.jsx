@@ -12,6 +12,12 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [initError, setInitError] = useState(null);
   const [activeTab, setActiveTab] = useState("chats");
+  const [incidentTrigger, setIncidentTrigger] = useState(0);
+
+  const handleIncidentAlertSent = () => {
+    setActiveTab("groups");
+    setIncidentTrigger(Date.now());
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -90,12 +96,17 @@ export default function App() {
         onSwitchUser={handleSwitchUser}
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        onIncidentAlertSent={handleIncidentAlertSent}
       />
 
       <div className="cybersquad-main-container">
         {currentUser ? (
           <CometChatProvider theme="dark">
-            <CyberSquadChat activeTab={activeTab} onTabChange={setActiveTab} />
+            <CyberSquadChat
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              incidentTrigger={incidentTrigger}
+            />
           </CometChatProvider>
         ) : (
           <CyberSquadLogin onLoginSuccess={handleLoginSuccess} />

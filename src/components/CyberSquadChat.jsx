@@ -49,7 +49,7 @@ function reducer(state, action) {
   }
 }
 
-export function CyberSquadChat({ activeTab, onTabChange }) {
+export function CyberSquadChat({ activeTab, onTabChange, incidentTrigger }) {
   const isMobile = useIsMobile();
   const [state, dispatch] = useReducer(reducer, {
     tab: activeTab || "chats",
@@ -65,6 +65,18 @@ export function CyberSquadChat({ activeTab, onTabChange }) {
       dispatch({ type: "tab", value: activeTab });
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    if (incidentTrigger) {
+      CometChat.getGroup("incident-alpha")
+        .then((group) => {
+          dispatch({ type: "group", value: group });
+        })
+        .catch((err) => {
+          console.warn("Could not get group incident-alpha:", err);
+        });
+    }
+  }, [incidentTrigger]);
 
   const target = state.user
     ? { user: state.user }
@@ -102,6 +114,7 @@ export function CyberSquadChat({ activeTab, onTabChange }) {
           <div className="selector-content">
             {state.tab === "chats" && (
               <CometChatConversations
+                key={`cc-convs-${incidentTrigger || 0}`}
                 activeConversation={state.conversation}
                 onItemClick={(c) => {
                   const e = c.getConversationWith();
@@ -117,6 +130,7 @@ export function CyberSquadChat({ activeTab, onTabChange }) {
 
             {state.tab === "groups" && (
               <CometChatGroups
+                key={`cc-groups-${incidentTrigger || 0}`}
                 activeGroup={state.group}
                 onItemClick={(g) => dispatch({ type: "group", value: g })}
               />
@@ -146,6 +160,7 @@ export function CyberSquadChat({ activeTab, onTabChange }) {
         onSearchOptionClicked={() => dispatch({ type: "side", value: "chat-search" })}
       />
       <CometChatMessageList
+        key={`msg-list-${target.group?.getGuid() || target.user?.getUid() || "chat"}-${incidentTrigger || 0}`}
         {...target}
         onThreadRepliesClick={(m) => dispatch({ type: "thread", value: m })}
       />
